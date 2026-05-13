@@ -1,0 +1,131 @@
+# DF-145 9dots-SLA-Compliance Customer-SLA-Breach-Detection [CRUX-MK]
+# Welle: 25 (Skeleton-Wave-1 W51-B)
+# Domain: K_0 (9dots Revenue/Customer-Retention)
+
+df_id: DF-145
+df_name: 9dots-sla-compliance
+welle: 25
+domain: K_0
+status: SKELETON-CONDITIONAL
+crux-mk: true
+
+mission: |
+  Customer-SLA-Breach-Detection fuer 9dots. Tracking SLA-Breaches-30d,
+  Average-Response-Time, Uptime-pct, SLA-Credits-Owed. NIEMALS Auto-Refund.
+
+# K11-K16
+k11_cascade_isolation: hard
+failure_blast_radius: 0
+dependency_dlq_strategy: "Eigenes State-File, append-only SLA-Log"
+
+k12_distillation_resistenz:
+  output_feeds_into_training: false
+  provenance_required_in_output: true
+  non_llm_validation_layer: true
+
+k13_independent_ground_truth:
+  external_anchor_type: filesystem
+  external_anchor_validation_frequency: per_run
+  pre_action_domain_check: true
+  pre_action_backup_check: true
+  pre_action_blast_radius_check: true
+
+k14_human_override_decay:
+  override_complexity: single_command
+  override_documentation_freshness_days: 30
+  martin_review_cadence: weekly  # K_0
+  bus_factor_handover_drilled: false
+
+k15_entropy_budget:
+  entropy_added_loc_estimate: 200
+  entropy_added_concepts:
+    - SLA-Breach-Detection
+    - Response-Time-Tracking
+    - SLA-Credits-Calculation
+  entropy_justified_by_rho:
+    rho_low_eur_per_year: 5000
+    rho_high_eur_per_year: 30000
+    rho_confidence: PROVISIONAL
+
+k16_concurrent_spawn_protection: both
+lock_dir: /tmp/df-145.lock
+lock_stale_age_h: 6
+engine_pgrep_check: true
+lock_release_on: EXIT_INT_TERM
+
+# LC1-LC5
+lose_coupling:
+  LC1_graceful_degradation:
+    degradation_modes:
+      - full
+      - degraded_anchor
+      - standalone
+    degradation_test_required: true
+  LC2_direct_mode:
+    direct_mode_available: true
+    direct_mode_capability: 0.85
+    direct_mode_trigger: "DF_145_REAL_API_ENABLED=false"
+  LC3_circuit_breaker:
+    circuit_breaker_timeout_s: 30
+    circuit_breaker_open_threshold: 3
+    circuit_breaker_half_open_test_interval_s: 300
+  LC4_failure_isolation:
+    state_externalization: true
+    idempotent_operations: true
+    dependency_dlq_separate: false
+  LC5_health_check:
+    health_check_dependencies: []
+    health_check_degraded_score: 0.7
+    health_check_endpoint_or_file: branch-hub/state/df-145-health.json
+
+default_action:
+  description: "Mock-Mode: lese SLA-Log-Files, generiere Breach-Report, NIEMALS Auto-Refund"
+  rho_per_run_eur: 40
+  block_gates:
+    - gate_id: K13_PAV
+      block_reason: "K_0-Naehe: Anker-Check"
+      false_block_cost_eur: 5
+      legitimate_block_condition: "Env-Tag unverifiziert"
+  graceful_degradation_path: "Mock-Fallback (empty SLA-Log)"
+
+activation_gates:
+  DF_145_REAL_API_ENABLED:
+    default: false
+    description: "Real-Read der SLA-Files"
+    requires_phronesis_ticket: true
+  DF_145_ENV:
+    default: dev
+
+q0_sperr_liste:
+  - id: Q0-1
+    rule: "Auto-Refund-Ausloesung"
+    enforcement: "DF hat KEINE Payment-API"
+  - id: Q0-2
+    rule: "Decision-Empfehlungen produzieren"
+    enforcement: "Decision-Keyword-RegEx"
+
+rho_estimate:
+  annual_eur: 18000
+  reason: "SLA-Compliance-Audit-Automation, manuelle Checks ~6h/Quartal eingespart"
+  schwer_quantifizierbar: false
+
+migration_provenance:
+  source_welle: 25
+  pre_skeleton_engine_loc: 200
+  reference_pattern: df-108
+  skeleton_created: 2026-05-13
+
+trinity_compliance:
+  options_presented_in_spec: true
+  variants:
+    - conservative: "Mock-Mode default"
+    - aggressive: "DF_145_REAL_API_ENABLED=true (Phase-2)"
+    - contrarian: "DF-145 sunset wenn SLA durch externe Lib ersetzt"
+
+crux_bindung:
+  K_0: "9dots-Revenue geschuetzt durch SLA-Compliance-Tracking"
+  Q_0: "n/a"
+  I_min: "strukturierte K11-K16 + LC1-LC5"
+  W_0: "Manuelle SLA-Audits 6h/Quartal eingespart"
+
+# [CRUX-MK]
