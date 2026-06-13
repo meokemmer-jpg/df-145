@@ -1,6 +1,6 @@
 {
   "df": "df-145",
-  "ts": "2026-06-12T23:13:21.918385+00:00",
+  "ts": "2026-06-13T02:53:58.676695+00:00",
   "crux": "[CRUX-MK]",
   "winner_provider": "incumbent-kept",
   "winner_tests_passed": true,
@@ -24,8 +24,8 @@
       "tests_passed": true,
       "n_tests": 1,
       "n_assert": 6,
-      "coverage_pct": 89.0,
-      "q": 1454.0,
+      "coverage_pct": 62.0,
+      "q": 1319.0,
       "error": null
     },
     {
