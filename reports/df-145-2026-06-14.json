@@ -1,0 +1,18 @@
+{
+  "df-145": {
+    "average_response_time_minutes": 0.0,
+    "customers_at_breach_risk": [],
+    "df": "DF-145",
+    "iso_timestamp": "2026-06-14T20:14:51.342612+00:00",
+    "sla_breaches_30d": 0,
+    "sla_credits_owed_eur": 0.0,
+    "source": "mock",
+    "uptime_pct": 100.0,
+    "welle": "25"
+  },
+  "k17_pre_action_verification": {
+    "env_tag": "real_api_enabled=false",
+    "missing_anchors": [],
+    "ok": true
+  }
+}
