@@ -3,7 +3,7 @@
     "average_response_time_minutes": 0.0,
     "customers_at_breach_risk": [],
     "df": "DF-145",
-    "iso_timestamp": "2026-06-18T00:45:13.354552+00:00",
+    "iso_timestamp": "2026-06-18T20:55:33.620935+00:00",
     "sla_breaches_30d": 0,
     "sla_credits_owed_eur": 0.0,
     "source": "mock",
