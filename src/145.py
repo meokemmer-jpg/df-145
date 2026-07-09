@@ -41,49 +41,68 @@ def calculate_sla_report(
     monthly_fee_eur: float = 0.0,
     uptime_credit_rate: float = 0.10,
 ) -> dict[str, Any]:
+    if window_days <= 0:
+        raise ValueError("window_days must be positive")
+    if sla_response_minutes < 0:
+        raise ValueError("sla_response_minutes must be non-negative")
+    if not 0 <= sla_uptime_percent <= 100:
+        raise ValueError("sla_uptime_percent must be between 0 and 100")
+    if response_breach_credit_eur < 0 or monthly_fee_eur < 0 or uptime_credit_rate < 0:
+        raise ValueError("credit values must be non-negative")
+
     now_dt = _as_datetime(now) if now is not None else datetime.utcnow()
     window_start = now_dt - timedelta(days=window_days)
     total_window_minutes = window_days * 24 * 60
 
-    relevant_incidents: list[dict[str, Any]] = []
+    incidents_considered = 0
     response_times: list[float] = []
     response_breaches = 0
     downtime_minutes = 0.0
 
     for incident in incidents:
+        if incident.get("customer_id", customer_id) != customer_id:
+            continue
+
         started_at = _as_datetime(incident["started_at"])
         resolved_at = _as_datetime(incident["resolved_at"])
         overlap = _overlap_minutes(started_at, resolved_at, window_start, now_dt)
         if overlap <= 0:
             continue
 
-        relevant_incidents.append(incident)
+        incidents_considered += 1
         downtime_minutes += overlap
 
         first_response_at = incident.get("first_response_at")
-        if first_response_at is not None:
-            response_minutes = _minutes_between(started_at, _as_datetime(first_response_at))
-            response_times.append(response_minutes)
-            if response_minutes > sla_response_minutes:
-                response_breaches += 1
+        if first_response_at is None:
+            response_breaches += 1
+            continue
+
+        response_minutes = _minutes_between(started_at, _as_datetime(first_response_at))
+        response_times.append(response_minutes)
+        if response_minutes > sla_response_minutes:
+            response_breaches += 1
 
     avg_response = round(sum(response_times) / len(response_times), 2) if response_times else 0.0
-    uptime_percent = round(max(0.0, 100.0 * (total_window_minutes - downtime_minutes) / total_window_minutes), 4)
-    uptime_breach = uptime_percent < sla_uptime_percent
+    uptime_percent_raw = max(
+        0.0,
+        100.0 * (total_window_minutes - downtime_minutes) / total_window_minutes,
+    )
+    uptime_breach = uptime_percent_raw < sla_uptime_percent
 
     credits = response_breaches * response_breach_credit_eur
     if uptime_breach:
         credits += monthly_fee_eur * uptime_credit_rate
 
+    credits = round(credits, 2)
+
     return {
         "customer_id": customer_id,
         "window_start": window_start.isoformat(),
         "window_end": now_dt.isoformat(),
-        "incidents_considered": len(relevant_incidents),
+        "incidents_considered": incidents_considered,
         "sla_breaches_30d": response_breaches + (1 if uptime_breach else 0),
         "average_response_time_minutes": avg_response,
-        "uptime_percent": round(uptime_percent, 2),
-        "sla_credits_owed_eur": round(credits, 2),
-        "auto_refund_triggered": False,
+        "uptime_percent": round(uptime_percent_raw, 2),
+        "sla_credits_owed_eur": credits,
+        "auto_refund_triggered": credits > 0,
     }
-# [CRUX-MK]

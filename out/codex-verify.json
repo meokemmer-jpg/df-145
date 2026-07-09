@@ -1,0 +1,6 @@
+{
+  "verdict": "HOLDS",
+  "reason": "Der Test ruft die echte SLA-Funktion mit gesundem und adversarialem Incident auf und prüft, dass Response-Breach, Uptime-Breach, Credits und Refund-Flag funktional unterschiedlich ausfallen.",
+  "ts": "2026-07-08T23:06:05.715975+00:00",
+  "attempts": 1
+}
