@@ -1,9 +1,9 @@
 {
   "df": "df-145",
-  "ts": "2026-07-19T15:56:47.706262+00:00",
+  "ts": "2026-07-20T03:55:38.582512+00:00",
   "maturity": "TESTED",
   "maturity_level": 4,
   "evidence_grade": 4,
-  "wargame_verdict": null,
+  "wargame_verdict": "CONDITIONAL",
   "crux": "[CRUX-MK]"
 }
